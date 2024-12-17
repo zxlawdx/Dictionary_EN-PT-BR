@@ -36,23 +36,29 @@ int CreateWord(word *w) {
 
 // Insere um novo nó na lista
 int InsertWord(Node **d, word *w) {
-    if ((*d) == NULL) {
-        if(!CreateWord(w))
-            return 0;
-        Node *new_node = (Node *)malloc(sizeof(Node));
-        if (new_node == NULL) return 0;
-
-        new_node->info = w;
-        new_node->prox = NULL;
-        *d = new_node;
+    if (*d == NULL) {  // Verifica se o nó atual não existe
+        *d = (Node *)malloc(sizeof(Node));
+        if (*d == NULL) return 0;  // Falha na alocação
+        (*d)->prox = NULL;  // Inicializa o ponteiro para o próximo nó
+        (*d)->info = w;     // Atribui o valor ao nó
         return 1;
     }
+    // Caso contrário, insere recursivamente no próximo nó
     return InsertWord(&((*d)->prox), w);
 }
 
 // Insere uma palavra no dicionário
 int InsertDicionary(dictionary *d, word *w) {
-    return InsertWord(&(d->Head), w);
+    if(d->Head == NULL){
+        d->Head = (Node *)malloc(sizeof(Node));
+        d->Head->prox = NULL;
+        if(!CreateWord(w)) return 0;
+        d->Head->info = w;
+        return 1;
+    }
+    else{
+        return InsertWord(&(d->Head), w);
+    }
 }
 
 int FreeVerbs(dictionary *d){
@@ -79,4 +85,5 @@ int Show (dictionary *d){
         printf("particípio passado: %s\n", p->info->past_participle);
         printf("significado: %s\n", p->info->meaning);
     }
+    return 1;
 }
