@@ -1,53 +1,53 @@
 #include "dictionary.h"
 
 // Inicializa o dicionário como vazio
-void CreateEmpty(dictionary *d) {
-    d->Head = NULL;
+void CreateEmpty(dictionary *dictionary) {
+    dictionary->Head = NULL;
 }
 
 // Verifica se um nó está vazio
-int Empty(Node *d) {
-    return (d == NULL);
+int Empty(Node *no) {
+    return (no == NULL);
 }
 
 // Cria um novo verbo irregular preenchendo os campos
-int CreateWord(word *w) {
-    w->verb = (char *)malloc(50 * sizeof(char));
-    w->infinitive = (char *)malloc(50 * sizeof(char));
-    w->simple_past = (char *)malloc(50 * sizeof(char));
-    w->past_participle = (char *)malloc(50 * sizeof(char));
-    w->meaning = (char *)malloc(100 * sizeof(char));
+int CreateWord(word *word) {
+    word->verb = (char *)malloc(50 * sizeof(char));
+    word->infinitive = (char *)malloc(50 * sizeof(char));
+    word->simple_past = (char *)malloc(50 * sizeof(char));
+    word->past_participle = (char *)malloc(50 * sizeof(char));
+    word->meaning = (char *)malloc(100 * sizeof(char));
 
-    if (!w->infinitive || !w->simple_past || !w->past_participle || !w->meaning || !w->verb)
+    if (!word->infinitive || !word->simple_past || !word->past_participle || !word->meaning || !word->verb)
         return 0; // Falha na alocação
     printf("Digite o Verbo:");
-    scanf(" %49[^\n]", w->verb);
+    scanf(" %49[^\n]", word->verb);
     printf("Digite o infinitivo: ");
-    scanf(" %49[^\n]", w->infinitive);
+    scanf(" %49[^\n]", word->infinitive);
     printf("Digite o passado simples: ");
-    scanf(" %49[^\n]", w->simple_past);
+    scanf(" %49[^\n]", word->simple_past);
     printf("Digite o particípio passado: ");
-    scanf(" %49[^\n]", w->past_participle);
+    scanf(" %49[^\n]", word->past_participle);
     printf("Digite o significado: ");
-    scanf(" %99[^\n]", w->meaning);
+    scanf(" %99[^\n]", word->meaning);
 
     return 1; // Sucesso
 }
 
 // Insere um novo nó na lista
-int InsertWord(Node **d, word *w) {
-    if ((*d) == NULL) {
-        if(!CreateWord(w))
+int InsertWord(Node **node, word *wrd) {
+    if ((*node) == NULL) { // vazio
+        if(!CreateWord(wrd))
             return 0;
-        Node *new_node = (Node *)malloc(sizeof(Node));
+        Node *new_node = (Node *)malloc(sizeof(Node)); // nó temporário
         if (new_node == NULL) return 0;
 
-        new_node->info = w;
-        new_node->prox = NULL;
-        *d = new_node;
+        new_node->info = wrd; // nó
+        new_node->prox = NULL; // nó folha
+        *node = new_node;
         return 1;
     }
-    return InsertWord(&((*d)->prox), w);
+    return InsertWord(&((*node)->prox), wrd);
 }
 
 // Insere uma palavra no dicionário
@@ -55,16 +55,33 @@ int InsertDicionary(dictionary *d, word *w) {
     return InsertWord(&(d->Head), w);
 }
 
-int FreeVerbs(dictionary *d){
-    Node *p, *q;
-    p = d->Head;
+int FreeVerbs(dictionary *dictionary){
+    // Node *p, *q;
+    // p = d->Head;
+    // while(p != NULL){
+    //     q = p;
+    //     p = p->prox;
+    //     free(q);
+    // }
+    // free(p);
+
+    Node *p = dictionary->Head;
     while(p != NULL){
-        q = p;
+        Node *q = p;
         p = p->prox;
+
+        free((q)->info->infinitive);
+        free((q)->info->meaning);
+        free((q)->info->past_participle);
+        free((q)->info->simple_past);
+        free((q)->info->verb);
+        free((q)->info);
         free(q);
     }
-    free(p);
 
+    dictionary->Head = NULL;
+
+    return 1;
 }
 
 int Show (dictionary *d){
@@ -79,4 +96,25 @@ int Show (dictionary *d){
         printf("particípio passado: %s\n", p->info->past_participle);
         printf("significado: %s\n", p->info->meaning);
     }
+}
+
+Node *Remove(Node *word, char wordKey){
+    if(word == NULL)
+        return 0;
+
+    if(strcmp(word->info->verb, wordKey) == 0){
+        Node* tmp = word->prox;
+
+        free(word->info->infinitive);
+        free(word->info->meaning);
+        free(word->info->past_participle);
+        free(word->info->simple_past);
+        free(word->info->verb);
+        free(word->info);
+        free(word);
+
+        return tmp;
+    }
+    word->prox = Remove(word->prox, wordKey);
+    return word;
 }

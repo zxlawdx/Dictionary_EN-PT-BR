@@ -36,4 +36,5 @@ int InsertWord(Node **d, word *w);
 int InsertDicionary(dictionary *d, word *w);
 int FreeVerbs(dictionary *d);
 int Show(dictionary *d);
+Node* Remove(Node* word, char wordKey);
 #endif
