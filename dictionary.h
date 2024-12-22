@@ -38,8 +38,8 @@ typedef struct {
 void CreateEmpty(dictionary *d);
 int Empty(Node *d);
 int CreateWord(word *w);
-int InsertWord(Node **d, word *w);
-int InsertDicionary(dictionary *d, word *w);
+int InsertWord(Node **d);
+int InsertDicionary(dictionary *d);
 int FreeVerbs(dictionary *d);
 int Show(dictionary *d);
 Node* Search(Node* word, char* wordKey);

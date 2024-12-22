@@ -35,24 +35,43 @@ int CreateWord(word *word) {
 }
 
 // Insere um novo nó na lista
-int InsertWord(Node **node, word *wrd) {
-    if ((*node) == NULL) { // vazio
-        if(!CreateWord(wrd))
-            return 0;
-        Node *new_node = (Node *)malloc(sizeof(Node)); // nó temporário
-        if (new_node == NULL) return 0;
+int InsertWord(Node **node) {
+    // Aloca um novo verbo
+    word *new_word = (word *)malloc(sizeof(word));
+    if (new_word == NULL) 
+        return 0;
 
-        new_node->info = wrd; // nó
-        new_node->prox = NULL; // nó folha
-        *node = new_node;
-        return 1;
+    // Preenche os campos do verbo usando `CreateWord`
+    if (!CreateWord(new_word)) {
+        free(new_word);
+        return 0;
     }
-    return InsertWord(&((*node)->prox), wrd);
+
+    // Aloca um novo nó para a lista
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    if (new_node == NULL) {
+        // Libera o verbo em caso de falha na alocação do nó
+        free(new_word->verb);
+        free(new_word->infinitive);
+        free(new_word->simple_past);
+        free(new_word->past_participle);
+        free(new_word->meaning);
+        free(new_word);
+        return 0;
+    }
+
+    // Insere o novo verbo no nó e ajusta a lista
+    new_node->info = new_word;
+    new_node->prox = *node; // Adiciona no início da lista
+    *node = new_node;
+
+    return 1; // Sucesso
 }
 
+
 // Insere uma palavra no dicionário
-int InsertDicionary(dictionary *d, word *w) {
-    return InsertWord(&(d->Head), w);
+int InsertDicionary(dictionary *d) {
+    return InsertWord(&(d->Head));
 }
 
 int FreeVerbs(dictionary *dictionary){
@@ -61,6 +80,14 @@ int FreeVerbs(dictionary *dictionary){
     while(p != NULL){
         Node *q = p;
         p = p->prox;
+
+        free((q)->info->verb);
+        free((q)->info->infinitive);
+        free((q)->info->simple_past);
+        free((q)->info->past_participle);
+        free((q)->info->meaning);
+
+        free((q)->info);
         free(q);
     }
 
@@ -70,17 +97,23 @@ int FreeVerbs(dictionary *dictionary){
 }
 
 int Show (dictionary *d){
-    if(Empty(d->Head))
+    if(Empty(d->Head)){
+        printf("Dicionario esta vazio!\n");
         return 0;
+    }
     
-    Node *p;
-    for(p = d->Head; p!= NULL; p = p->prox){
+    Node *p = d->Head;
+    while(p != NULL){
         printf("verbo: %s\n", p->info->verb);
         printf("infinitivo: %s\n", p->info->infinitive);
         printf("passado simples: %s\n", p->info->simple_past);
         printf("participio passado: %s\n", p->info->past_participle);
         printf("significado: %s\n", p->info->meaning);
+
+        p = p->prox;
     }
+
+    return 1;
 }
 
 Node *Search(Node *word, char* wordKey){
@@ -88,23 +121,14 @@ Node *Search(Node *word, char* wordKey){
         return NULL;
 
     Node *current = word;
-    
     while(current != NULL){
-
     if(strcmp(word->info->verb, wordKey) == 0){
             printf("Traducao para a palavra, '%s':\n ", wordKey);
-
-            Node* tmp = word;
-
-            while(tmp != NULL && strcmp(word->info->verb, wordKey) == 0){
-                printf("%s\n", word->info->meaning);
-                tmp = tmp->prox;
-            }
-            
+            printf("%s\n", current->info->meaning );
             return current;
-            
-            current = current->prox;
         }
+
+        current = current->prox;
     }
 
     printf("A palavra %s nao encontrada no dicionario\n", wordKey);
@@ -117,6 +141,12 @@ Node *Remove(Node *word, char* wordKey){
 
     if(strcmp(word->info->verb, wordKey) == 0){ // 0 se iguais, 1 se diferentes
         Node* tmp = word->prox;
+
+        free(word->info->verb);
+        free(word->info->infinitive);
+        free(word->info->simple_past);
+        free(word->info->past_participle);
+        free(word->info->meaning);
 
         free(word);
 

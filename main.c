@@ -30,8 +30,8 @@ int main() {
         switch (opc) {
         case 1:
             // Inserir um verbo
-            if (InsertDicionary(&dic, &wrd)) {
-                printf("Verbo inserido com sucesso!\n");
+            if (InsertWord(&(dic.Head))) {
+            printf("Verbo inserido com sucesso!\n");
             } else {
                 printf("Erro ao inserir o verbo.\n");
             }
@@ -42,9 +42,7 @@ int main() {
 
         case 2:
             // Exibir todos os verbos
-            if (!Show(&dic)) {
-                printf("O dicionario esta vazio.\n");
-            }
+            Show(&dic);
             printf("-- Pressione Enter para continuar --");
             getchar();
             system("cls");
@@ -82,6 +80,8 @@ int main() {
         case 0:
             // Sair do programa
             printf("Encerrando o programa...\n");
+            // Libera recursos temporários após cada iteração
+            FreeVerbs(&dic);
             break;
 
         default:
@@ -92,9 +92,6 @@ int main() {
             system("cls");
             break;
         }
-
-        // Libera recursos temporários após cada iteração
-        FreeVerbs(&dic);
 
     } while (opc != 0);
 
