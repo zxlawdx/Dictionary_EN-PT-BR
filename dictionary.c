@@ -61,13 +61,6 @@ int FreeVerbs(dictionary *dictionary){
     while(p != NULL){
         Node *q = p;
         p = p->prox;
-
-        free((q)->info->infinitive);
-        free((q)->info->meaning);
-        free((q)->info->past_participle);
-        free((q)->info->simple_past);
-        free((q)->info->verb);
-        free((q)->info);
         free(q);
     }
 
@@ -125,12 +118,6 @@ Node *Remove(Node *word, char* wordKey){
     if(strcmp(word->info->verb, wordKey) == 0){ // 0 se iguais, 1 se diferentes
         Node* tmp = word->prox;
 
-        free(word->info->infinitive);
-        free(word->info->meaning);
-        free(word->info->past_participle);
-        free(word->info->simple_past);
-        free(word->info->verb);
-        free(word->info);
         free(word);
 
         return tmp;
