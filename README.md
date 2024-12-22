@@ -1,7 +1,8 @@
 # Dicionário Inglês-Português de Verbos Irregulares
 
-## Universidade Federal de Rondônia 
-**Estrutura de Dados I**  
+## Universidade Federal de Rondônia
+### Alunos: Carlos Eduardo Evangelista dos Santos e Marinaldo da Costa Barroso Filho
+**Estrutura de Dados I**
 **Trabalho: Dicionário Inglês-Português de Verbos Irregulares**  
 **Dados de Entrega: 23/12/2024**
 
@@ -123,6 +124,12 @@ O projeto contém os seguintes arquivos principais:
 - **principal.c**: Programa cliente que utiliza como funções do dicionário e permite interação com o usuário.
 - **verbo.txt**: Arquivo de texto onde os verbos e suas informações serão armazenados e lidos.
 
+
+### Como executar o código?
+**<h3>Utilizamos o VScode para criar este projeto.</h3>**
+Para executar o programa, primeiramente é necessário ter o ``VScode``. Ao você ter o projeto aberto no seu VScode, entre no terminal e digite o seguinte comando para compilar todos os arquivos de uma vez: `gcc dicionario.c dicionario.h main.c -programa`
+<br> Em seguida, digite `./programa` para executar o projeto.
+
 ### Conclusão
 
-Este projeto oferece uma maneira simples de criar um inglês, utilizando 
+Projeto desenvolvido por: Carlos Eduardo Evangelista dos Santos e Marinaldo da Costa Barroso Filho

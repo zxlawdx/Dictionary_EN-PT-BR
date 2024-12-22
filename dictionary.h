@@ -1,6 +1,12 @@
-/* Alunos: Marinaldo da Costa Barroso Filho, Carlos Eduardo Evangelista
-   Curso: Ciência da Computação
-   Trabalho 1: Dicionário de Verbos irregulares Inglês-Português organizado com uma Lista */
+/* 
+   Alunos: Marinaldo da Costa Barroso Filho e Carlos Eduardo Evangelista dos Santos
+   Curso: Ciência da Computação 
+   Trabalho 1: Dicionário de Verbos Irregulares Inglês-Português
+   organizado com uma Lista Dinamicamente Encadeada
+   Estrutura de Dados I -- 2024 -- DACC/UNIR
+   Profa. Carolina Watanabe 
+   Compilador: MinGW versão 6.0.3-1 ** Sistema Operacional: Windows 
+*/
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
@@ -36,5 +42,6 @@ int InsertWord(Node **d, word *w);
 int InsertDicionary(dictionary *d, word *w);
 int FreeVerbs(dictionary *d);
 int Show(dictionary *d);
-Node* Remove(Node* word, char wordKey);
+Node* Search(Node* word, char* wordKey);
+Node* Remove(Node* word, char* wordKey);
 #endif

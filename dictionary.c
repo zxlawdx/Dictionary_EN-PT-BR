@@ -26,7 +26,7 @@ int CreateWord(word *word) {
     scanf(" %49[^\n]", word->infinitive);
     printf("Digite o passado simples: ");
     scanf(" %49[^\n]", word->simple_past);
-    printf("Digite o particípio passado: ");
+    printf("Digite o participio passado: ");
     scanf(" %49[^\n]", word->past_participle);
     printf("Digite o significado: ");
     scanf(" %99[^\n]", word->meaning);
@@ -56,14 +56,6 @@ int InsertDicionary(dictionary *d, word *w) {
 }
 
 int FreeVerbs(dictionary *dictionary){
-    // Node *p, *q;
-    // p = d->Head;
-    // while(p != NULL){
-    //     q = p;
-    //     p = p->prox;
-    //     free(q);
-    // }
-    // free(p);
 
     Node *p = dictionary->Head;
     while(p != NULL){
@@ -93,16 +85,44 @@ int Show (dictionary *d){
         printf("verbo: %s\n", p->info->verb);
         printf("infinitivo: %s\n", p->info->infinitive);
         printf("passado simples: %s\n", p->info->simple_past);
-        printf("particípio passado: %s\n", p->info->past_participle);
+        printf("participio passado: %s\n", p->info->past_participle);
         printf("significado: %s\n", p->info->meaning);
     }
 }
 
-Node *Remove(Node *word, char wordKey){
+Node *Search(Node *word, char* wordKey){
     if(word == NULL)
-        return 0;
+        return NULL;
+
+    Node *current = word;
+    
+    while(current != NULL){
 
     if(strcmp(word->info->verb, wordKey) == 0){
+            printf("Traducao para a palavra, '%s':\n ", wordKey);
+
+            Node* tmp = word;
+
+            while(tmp != NULL && strcmp(word->info->verb, wordKey) == 0){
+                printf("%s\n", word->info->meaning);
+                tmp = tmp->prox;
+            }
+            
+            return current;
+            
+            current = current->prox;
+        }
+    }
+
+    printf("A palavra %s nao encontrada no dicionario\n", wordKey);
+    return NULL;
+}
+
+Node *Remove(Node *word, char* wordKey){
+    if(word == NULL)
+        return NULL;
+
+    if(strcmp(word->info->verb, wordKey) == 0){ // 0 se iguais, 1 se diferentes
         Node* tmp = word->prox;
 
         free(word->info->infinitive);
