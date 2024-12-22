@@ -1,47 +1,41 @@
-/* 
-   Alunos: Marinaldo da Costa Barroso Filho e Carlos Eduardo Evangelista dos Santos
-   Curso: Ciência da Computação 
-   Trabalho 1: Dicionário de Verbos Irregulares Inglês-Português
-   organizado com uma Lista Dinamicamente Encadeada
-   Estrutura de Dados I -- 2024 -- DACC/UNIR
-   Profa. Carolina Watanabe 
-   Compilador: MinGW versão 6.0.3-1 ** Sistema Operacional: Windows 
-*/
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef DICIONARIO_H
+#define DICIONARIO_H
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// Estrutura para representar um verbo irregular
-typedef struct {
-    char *verb; //verbo 
-    char *infinitive;       // Infinitivo
-    char *simple_past;      // Passado Simples
-    char *past_participle;  // Particípio Passado
-    char *meaning;          // Significado
+
+typedef struct{
+    char *verb;
+    char *infinitive;
+    char *simple_past;
+    char *past_participle;
+    char *meaning;
 } word;
 
-// Nó para lista ligada
-typedef struct node {
-    struct node *prox;
+
+typedef struct node{
     word *info;
+    struct node *left; // filho à esquerda
+    struct node *right; // filho à direita
+    int height; // altura do no
 } Node;
 
-// Estrutura principal do dicionário
-typedef struct {
-    Node *Head;
-} dictionary;
 
-// Funções do TAD
-void CreateEmpty(dictionary *d);
-int Empty(Node *d);
-int CreateWord(word *w);
-int InsertWord(Node **d);
-int InsertDicionary(dictionary *d);
-int FreeVerbs(dictionary *d);
-int Show(dictionary *d);
-Node* Search(Node* word, char* wordKey);
-Node* Remove(Node* word, char* wordKey);
+typedef struct{
+    Node *root;
+} dicionario;
+
+
+void CreateEmpty(dicionario *dic);
+int CreateWord(word *wrd);
+Node* InsertWord(Node **root, word *new_word);
+Node* Remove(Node *root, const char *verb);
+Node* Buscar(Node *root, const char *verb);
+void FreeVerbs(Node *root);
+void ExibirArvore(Node *root);
+
+
 #endif

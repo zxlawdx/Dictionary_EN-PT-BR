@@ -1,15 +1,17 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "dictionary.h"
 
+
 int main() {
-    dictionary dic;
-    word wrd;
+    dicionario dic;
     int opc;
+
 
     // Inicializa o dicionário como vazio
     CreateEmpty(&dic);
+
 
     do {
         // Exibe o menu de opções
@@ -23,30 +25,50 @@ int main() {
         printf("Escolha uma opcao: ");
         scanf("%d", &opc);
 
+
         // Limpa o buffer de entrada
         while (getchar() != '\n');
 
+
         // Processa a opção escolhida
         switch (opc) {
-        case 1:
+        case 1: {
             // Inserir um verbo
-            if (InsertWord(&(dic.Head))) {
-            printf("Verbo inserido com sucesso!\n");
+            word *novaPlvr = (word *)malloc(sizeof(word));
+            if (novaPlvr) {
+                if (CreateWord(novaPlvr)) {
+                    if (InsertWord(&dic.root, novaPlvr)) {
+                        printf("Verbo inserido com sucesso!\n");
+                    } else {
+                        free(novaPlvr);
+                        printf("Erro ao inserir o verbo (possivelmente já existente).\n");
+                    }
+                } else {
+                    free(novaPlvr);
+                    printf("Erro ao criar a palavra.\n");
+                }
             } else {
-                printf("Erro ao inserir o verbo.\n");
+                printf("Erro ao alocar memória para nova palavra.\n");
             }
             printf("-- Pressione Enter para continuar --");
             getchar(); // Pausa para o usuário visualizar
-            system("cls"); // Limpa a tela no Windows (use "clear" se for no Linux)
+            system("cls"); // Use "clear" para Linux/macOS
             break;
+        }
+
 
         case 2:
             // Exibir todos os verbos
-            Show(&dic);
+            if (dic.root) {
+                ExibirArvore(dic.root);
+            } else {
+                printf("Dicionario esta vazio!\n");
+            }
             printf("-- Pressione Enter para continuar --");
             getchar();
-            system("cls");
+            system("cls"); // Use "clear" para Linux/macOS
             break;
+
 
         case 3: {
             // Buscar um verbo
@@ -54,14 +76,25 @@ int main() {
             printf("Digite o verbo que voce deseja buscar: ");
             scanf(" %49[^\n]", verbo);
             while (getchar() != '\n'); // Limpa o buffer
-            if (!Search(dic.Head, verbo)) {
+
+
+            Node *resultado = Buscar(dic.root, verbo);
+            if (resultado) {
+                printf("Verbo encontrado!\n");
+                printf("Verbo: %s\n", resultado->info->verb);
+                printf("Infinitivo: %s\n", resultado->info->infinitive);
+                printf("Passado Simples: %s\n", resultado->info->simple_past);
+                printf("Particípio Passado: %s\n", resultado->info->past_participle);
+                printf("Significado: %s\n", resultado->info->meaning);
+            } else {
                 printf("Verbo '%s' nao encontrado.\n", verbo);
             }
             printf("-- Pressione Enter para continuar --");
             getchar();
-            system("cls");
+            system("cls"); // Use "clear" para Linux/macOS
             break;
         }
+
 
         case 4: {
             // Remover um verbo
@@ -69,31 +102,36 @@ int main() {
             printf("Digite o verbo que voce deseja remover: ");
             scanf(" %49[^\n]", verboRem);
             while (getchar() != '\n'); // Limpa o buffer
-            dic.Head = Remove(dic.Head, verboRem);
+
+
+            dic.root = Remove(dic.root, verboRem);
             printf("Verbo '%s' removido com sucesso.\n", verboRem);
             printf("-- Pressione Enter para continuar --");
             getchar();
-            system("cls");
+            system("cls"); // Use "clear" para Linux/macOS
             break;
         }
+
 
         case 0:
             // Sair do programa
             printf("Encerrando o programa...\n");
-            // Libera recursos temporários após cada iteração
-            FreeVerbs(&dic);
+            FreeVerbs(dic.root); // Libera todos os verbos
             break;
+
 
         default:
             // Opção inválida
             printf("Opcao invalida! Tente novamente.\n");
             printf("-- Pressione Enter para continuar --");
             getchar();
-            system("cls");
+            system("cls"); // Use "clear" para Linux/macOS
             break;
         }
 
+
     } while (opc != 0);
+
 
     return 0;
 }

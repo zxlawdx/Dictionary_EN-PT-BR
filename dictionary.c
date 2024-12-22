@@ -1,157 +1,316 @@
 #include "dictionary.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// Inicializa o dicionário como vazio
-void CreateEmpty(dictionary *dictionary) {
-    dictionary->Head = NULL;
+
+// Calcula a altura do nó
+int Height(Node *no) {
+    return no ? no->height : 0;
 }
 
-// Verifica se um nó está vazio
-int Empty(Node *no) {
-    return (no == NULL);
+
+// Calcula o fator de balanceamento
+int GetBalance(Node *no) {
+    if (!no) return 0;
+    return Height(no->left) - Height(no->right);
 }
 
-// Cria um novo verbo irregular preenchendo os campos
-int CreateWord(word *word) {
-    word->verb = (char *)malloc(50 * sizeof(char));
-    word->infinitive = (char *)malloc(50 * sizeof(char));
-    word->simple_past = (char *)malloc(50 * sizeof(char));
-    word->past_participle = (char *)malloc(50 * sizeof(char));
-    word->meaning = (char *)malloc(100 * sizeof(char));
 
-    if (!word->infinitive || !word->simple_past || !word->past_participle || !word->meaning || !word->verb)
-        return 0; // Falha na alocação
-    printf("Digite o Verbo: ");
-    scanf(" %49[^\n]", word->verb);
+// Realiza rotação à direita
+Node *RotateRight(Node *y) {
+    Node *x = y->left;
+    Node *T2 = x->right;
+
+
+    x->right = y;
+    y->left = T2;
+
+
+    y->height = 1 + (Height(y->left) > Height(y->right) ? Height(y->left) : Height(y->right));
+    x->height = 1 + (Height(x->left) > Height(x->right) ? Height(x->left) : Height(x->right));
+
+
+    return x;
+}
+
+
+// Realiza rotação à esquerda
+Node *RotateLeft(Node *x) {
+    Node *y = x->right;
+    Node *T2 = y->left;
+
+
+    y->left = x;
+    x->right = T2;
+
+
+    x->height = 1 + (Height(x->left) > Height(x->right) ? Height(x->left) : Height(x->right));
+    y->height = 1 + (Height(y->left) > Height(y->right) ? Height(y->left) : Height(y->right));
+
+
+    return y;
+}
+
+
+// Inicializa o dicionário vazio
+void CreateEmpty(dicionario *dic) {
+    dic->root = NULL;
+}
+
+
+// Cria e preenche uma nova palavra
+int CreateWord(word *wrd) {
+    wrd->verb = (char *)malloc(50 * sizeof(char));
+    wrd->infinitive = (char *)malloc(50 * sizeof(char));
+    wrd->simple_past = (char *)malloc(50 * sizeof(char));
+    wrd->past_participle = (char *)malloc(50 * sizeof(char));
+    wrd->meaning = (char *)malloc(100 * sizeof(char));
+
+
+    if (!wrd->verb || !wrd->infinitive || !wrd->simple_past || !wrd->past_participle || !wrd->meaning)
+        return 0;
+
+
+    printf("Digite o verbo: ");
+    scanf(" %49[^\n]", wrd->verb);
     printf("Digite o infinitivo: ");
-    scanf(" %49[^\n]", word->infinitive);
+    scanf(" %49[^\n]", wrd->infinitive);
     printf("Digite o passado simples: ");
-    scanf(" %49[^\n]", word->simple_past);
+    scanf(" %49[^\n]", wrd->simple_past);
     printf("Digite o participio passado: ");
-    scanf(" %49[^\n]", word->past_participle);
+    scanf(" %49[^\n]", wrd->past_participle);
     printf("Digite o significado: ");
-    scanf(" %99[^\n]", word->meaning);
+    scanf(" %99[^\n]", wrd->meaning);
 
-    return 1; // Sucesso
-}
-
-// Insere um novo nó na lista
-int InsertWord(Node **node) {
-    // Aloca um novo verbo
-    word *new_word = (word *)malloc(sizeof(word));
-    if (new_word == NULL) 
-        return 0;
-
-    // Preenche os campos do verbo usando `CreateWord`
-    if (!CreateWord(new_word)) {
-        free(new_word);
-        return 0;
-    }
-
-    // Aloca um novo nó para a lista
-    Node *new_node = (Node *)malloc(sizeof(Node));
-    if (new_node == NULL) {
-        // Libera o verbo em caso de falha na alocação do nó
-        free(new_word->verb);
-        free(new_word->infinitive);
-        free(new_word->simple_past);
-        free(new_word->past_participle);
-        free(new_word->meaning);
-        free(new_word);
-        return 0;
-    }
-
-    // Insere o novo verbo no nó e ajusta a lista
-    new_node->info = new_word;
-    new_node->prox = *node; // Adiciona no início da lista
-    *node = new_node;
-
-    return 1; // Sucesso
-}
-
-
-// Insere uma palavra no dicionário
-int InsertDicionary(dictionary *d) {
-    return InsertWord(&(d->Head));
-}
-
-int FreeVerbs(dictionary *dictionary){
-
-    Node *p = dictionary->Head;
-    while(p != NULL){
-        Node *q = p;
-        p = p->prox;
-
-        free((q)->info->verb);
-        free((q)->info->infinitive);
-        free((q)->info->simple_past);
-        free((q)->info->past_participle);
-        free((q)->info->meaning);
-
-        free((q)->info);
-        free(q);
-    }
-
-    dictionary->Head = NULL;
 
     return 1;
 }
 
-int Show (dictionary *d){
-    if(Empty(d->Head)){
-        printf("Dicionario esta vazio!\n");
-        return 0;
-    }
-    
-    Node *p = d->Head;
-    while(p != NULL){
-        printf("verbo: %s\n", p->info->verb);
-        printf("infinitivo: %s\n", p->info->infinitive);
-        printf("passado simples: %s\n", p->info->simple_past);
-        printf("participio passado: %s\n", p->info->past_participle);
-        printf("significado: %s\n", p->info->meaning);
-        printf("-----------------------------------------------------\n");
-        p = p->prox;
+
+// Insere uma nova palavra na árvore
+Node* InsertWord(Node **root, word *new_word) {
+    if (!*root) {
+        *root = (Node *)malloc(sizeof(Node));
+        if (!*root) return NULL;
+
+
+        (*root)->info = new_word;
+        (*root)->left = (*root)->right = NULL;
+        (*root)->height = 1;
+        return *root;
     }
 
-    return 1;
+
+    // Inserção recursiva
+    if (strcmp(new_word->verb, (*root)->info->verb) < 0) {
+        (*root)->left = InsertWord(&(*root)->left, new_word);
+    } else if (strcmp(new_word->verb, (*root)->info->verb) > 0) {
+        (*root)->right = InsertWord(&(*root)->right, new_word);
+    } else {
+        // Verbo já existe
+        printf("O verbo '%s' já existe no dicionário!\n", new_word->verb);
+        return *root;
+    }
+
+
+    // Atualiza a altura do nó
+    (*root)->height = 1 + (Height((*root)->left) > Height((*root)->right) ? Height((*root)->left) : Height((*root)->right));
+
+
+    // Obtém o fator de balanceamento
+    int balance = GetBalance(*root);
+
+
+    // Balanceamento
+    // Rotação à direita
+    if (balance > 1 && strcmp(new_word->verb, (*root)->left->info->verb) < 0)
+        return RotateRight(*root);
+
+
+    // Rotação à esquerda
+    if (balance < -1 && strcmp(new_word->verb, (*root)->right->info->verb) > 0)
+        return RotateLeft(*root);
+
+
+    // Rotação dupla (esquerda-direita)
+    if (balance > 1 && strcmp(new_word->verb, (*root)->left->info->verb) > 0) {
+        (*root)->left = RotateLeft((*root)->left);
+        return RotateRight(*root);
+    }
+
+
+    // Rotação dupla (direita-esquerda)
+    if (balance < -1 && strcmp(new_word->verb, (*root)->right->info->verb) < 0) {
+        (*root)->right = RotateRight((*root)->right);
+        return RotateLeft(*root);
+    }
+
+
+    return *root;
 }
 
-Node *Search(Node *word, char* wordKey){
-    if(word == NULL)
-        return NULL;
 
-    Node *current = word;
-    while(current != NULL){
-    if(strcmp(word->info->verb, wordKey) == 0){
-            printf("Traducao para a palavra, '%s': ", wordKey);
-            printf("%s\n", current->info->meaning );
-            return current;
+Node* EncontrarMenor(Node *no){
+    while(no->left){
+        no = no->left;
+    }
+
+
+    return no;
+}
+
+
+Node *Remove(Node *root, const char *verb) {
+    if (!root) {
+        printf("Verbo '%s' nao encontrado.\n", verb);
+        return root; // Nó não encontrado, retorna o próprio root
+    }
+
+
+    // Navega pela árvore para encontrar o nó a ser removido
+    if (strcmp(verb, root->info->verb) < 0) {
+        root->left = Remove(root->left, verb); // Verbo está na subárvore esquerda
+    } else if (strcmp(verb, root->info->verb) > 0) {
+        root->right = Remove(root->right, verb); // Verbo está na subárvore direita
+    } else {
+        // Verbo encontrado, proceder com a remoção
+
+
+        // Caso 1: Nó com apenas um filho ou nenhum
+        if (!root->left || !root->right) {
+            Node *temp = root->left ? root->left : root->right;
+
+
+            // Caso nenhum filho
+            if (!temp) {
+                temp = root;
+                root = NULL;
+            } else {
+                // Copia o único filho
+                *root = *temp;
+            }
+
+
+            free(temp->info->verb);
+            free(temp->info->infinitive);
+            free(temp->info->simple_past);
+            free(temp->info->past_participle);
+            free(temp->info->meaning);
+            free(temp->info);
+            free(temp);
+        } else {
+            // Caso 2: Nó com dois filhos
+
+
+            // Encontra o sucessor em ordem (o menor nó na subárvore direita)
+            Node *temp = EncontrarMenor(root->right);
+
+
+            // Copia os dados do sucessor para o nó atual
+            word *temp_word = root->info;
+            root->info = temp->info;
+            temp->info = temp_word;
+
+
+            // Remove o sucessor
+            root->right = Remove(root->right, temp->info->verb);
         }
-
-        current = current->prox;
     }
 
-    printf("A palavra %s nao encontrada no dicionario\n", wordKey);
-    return NULL;
+
+    // Caso base: se a árvore ficou vazia após remoção
+    if (!root) return root;
+
+
+    // Atualiza a altura do nó
+    root->height = 1 + (Height(root->left) > Height(root->right) ? Height(root->left) : Height(root->right));
+
+
+    // Calcula o fator de balanceamento
+    int balance = GetBalance(root);
+
+
+    // Balanceia a árvore AVL
+
+
+    // Caso 1: Esquerda-Esquerda
+    if (balance > 1 && GetBalance(root->left) >= 0) {
+        return RotateRight(root);
+    }
+
+
+    // Caso 2: Esquerda-Direita
+    if (balance > 1 && GetBalance(root->left) < 0) {
+        root->left = RotateLeft(root->left);
+        return RotateRight(root);
+    }
+
+
+    // Caso 3: Direita-Direita
+    if (balance < -1 && GetBalance(root->right) <= 0) {
+        return RotateLeft(root);
+    }
+
+
+    // Caso 4: Direita-Esquerda
+    if (balance < -1 && GetBalance(root->right) > 0) {
+        root->right = RotateRight(root->right);
+        return RotateLeft(root);
+    }
+
+
+    return root; // Retorna o nó raiz balanceado
 }
 
-Node *Remove(Node *word, char* wordKey){
-    if(word == NULL)
-        return NULL;
 
-    if(strcmp(word->info->verb, wordKey) == 0){ // 0 se iguais, 1 se diferentes
-        Node* tmp = word->prox;
 
-        free(word->info->verb);
-        free(word->info->infinitive);
-        free(word->info->simple_past);
-        free(word->info->past_participle);
-        free(word->info->meaning);
 
-        free(word);
+// Busca um verbo na árvore
+Node *Buscar(Node *root, const char *verb) {
+    if (!root || strcmp(verb, root->info->verb) == 0)
+        return root;
 
-        return tmp;
-    }
-    word->prox = Remove(word->prox, wordKey);
-    return word;
+
+    if (strcmp(verb, root->info->verb) < 0)
+        return Buscar(root->left, verb);
+
+
+    return Buscar(root->right, verb);
+}
+
+
+// Exibe os verbos na árvore em ordem
+void ExibirArvore(Node *root) {
+    if (!root) return;
+
+
+    ExibirArvore(root->left);
+
+
+    printf("Verbo: %s\nInfinitivo: %s\nPassado Simples: %s\nParticipio Passado: %s\nSignificado: %s\n",
+           root->info->verb, root->info->infinitive, root->info->simple_past,
+           root->info->past_participle, root->info->meaning);
+
+
+    ExibirArvore(root->right);
+}
+
+
+// Libera a memória de todos os verbos
+void FreeVerbs(Node *root) {
+    if (!root) return;
+
+
+    FreeVerbs(root->left);
+    FreeVerbs(root->right);
+
+
+    free(root->info->verb);
+    free(root->info->infinitive);
+    free(root->info->simple_past);
+    free(root->info->past_participle);
+    free(root->info->meaning);
+    free(root->info);
+    free(root);
 }
