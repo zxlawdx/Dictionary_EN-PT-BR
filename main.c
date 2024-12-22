@@ -20,7 +20,7 @@ int main() {
         printf("(3) - Buscar um verbo\n");
         printf("(4) - Remover um verbo\n");
         printf("(0) - Sair\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &opc);
 
         // Limpa o buffer de entrada
@@ -70,7 +70,7 @@ int main() {
             scanf(" %49[^\n]", verboRem);
             while (getchar() != '\n'); // Limpa o buffer
             dic.Head = Remove(dic.Head, verboRem);
-            printf("Verbo '%s' removido, se existia.\n", verboRem);
+            printf("Verbo '%s' removido com sucesso.\n", verboRem);
             printf("-- Pressione Enter para continuar --");
             getchar();
             system("cls");

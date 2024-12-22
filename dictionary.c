@@ -20,7 +20,7 @@ int CreateWord(word *word) {
 
     if (!word->infinitive || !word->simple_past || !word->past_participle || !word->meaning || !word->verb)
         return 0; // Falha na alocação
-    printf("Digite o Verbo:");
+    printf("Digite o Verbo: ");
     scanf(" %49[^\n]", word->verb);
     printf("Digite o infinitivo: ");
     scanf(" %49[^\n]", word->infinitive);
@@ -109,7 +109,7 @@ int Show (dictionary *d){
         printf("passado simples: %s\n", p->info->simple_past);
         printf("participio passado: %s\n", p->info->past_participle);
         printf("significado: %s\n", p->info->meaning);
-
+        printf("-----------------------------------------------------\n");
         p = p->prox;
     }
 
@@ -123,7 +123,7 @@ Node *Search(Node *word, char* wordKey){
     Node *current = word;
     while(current != NULL){
     if(strcmp(word->info->verb, wordKey) == 0){
-            printf("Traducao para a palavra, '%s':\n ", wordKey);
+            printf("Traducao para a palavra, '%s': ", wordKey);
             printf("%s\n", current->info->meaning );
             return current;
         }
